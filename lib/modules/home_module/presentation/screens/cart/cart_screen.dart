@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fashion_shop/core/components/app_button.dart';
+import 'package:fashion_shop/core/resources/app_strings.dart';
 import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/image_assets.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
@@ -33,7 +34,7 @@ class CartScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Your cart is empty',
+                      AppStrings.cartEmpty,
                       style: getBukraBold(
                         fontSize: FontSize.s16,
                         color: ColorManager.darkText,
@@ -61,10 +62,8 @@ class CartScreen extends StatelessWidget {
                   child: ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     itemCount: state.items.length,
-                    separatorBuilder: (_, __) => const Divider(
-                      color: ColorManager.border,
-                      height: 24,
-                    ),
+                    separatorBuilder: (_, _) =>
+                        const Divider(color: ColorManager.border, height: 24),
                     itemBuilder: (context, index) {
                       return _CartItemWidget(item: state.items[index]);
                     },
@@ -84,7 +83,7 @@ class CartScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Total',
+                            AppStrings.total,
                             style: getBukraBold(
                               fontSize: FontSize.s16,
                               color: ColorManager.darkText,
@@ -100,10 +99,7 @@ class CartScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      AppButton(
-                        text: 'Checkout',
-                        onPressed: () {},
-                      ),
+                      AppButton(text: AppStrings.checkout, onPressed: () {}),
                     ],
                   ),
                 ),
@@ -129,12 +125,13 @@ class _CartItemWidget extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: CachedNetworkImage(
-            imageUrl:
-                item.product.images.isNotEmpty ? item.product.images.first : '',
+            imageUrl: item.product.images.isNotEmpty
+                ? item.product.images.first
+                : '',
             width: 90,
             height: 90,
             fit: BoxFit.cover,
-            errorWidget: (_, __, ___) =>
+            errorWidget: (_, _, _) =>
                 SvgPicture.asset(ImageAssets.error, width: 30),
           ),
         ),
@@ -167,9 +164,9 @@ class _CartItemWidget extends StatelessWidget {
                     icon: Icons.remove,
                     onTap: () {
                       context.read<CartCubit>().updateQuantity(
-                            item.product.id,
-                            item.quantity - 1,
-                          );
+                        item.product.id,
+                        item.quantity - 1,
+                      );
                     },
                   ),
                   Padding(
@@ -186,17 +183,15 @@ class _CartItemWidget extends StatelessWidget {
                     icon: Icons.add,
                     onTap: () {
                       context.read<CartCubit>().updateQuantity(
-                            item.product.id,
-                            item.quantity + 1,
-                          );
+                        item.product.id,
+                        item.quantity + 1,
+                      );
                     },
                   ),
                   const Spacer(),
                   GestureDetector(
                     onTap: () {
-                      context
-                          .read<CartCubit>()
-                          .removeFromCart(item.product.id);
+                      context.read<CartCubit>().removeFromCart(item.product.id);
                     },
                     child: const Icon(
                       Icons.delete_outline,

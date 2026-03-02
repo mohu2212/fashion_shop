@@ -10,4 +10,5 @@ class ImageAssets {
   static const String loading = '${_imagesPath}Loading.json';
   static const String ads = '${_imagesPath}ads.png';
   static const String error = '${_imagesPath}error.svg';
+  static const String termsAndConditions = '${_imagesPath}terms&conditions.svg';
 }

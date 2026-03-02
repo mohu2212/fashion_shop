@@ -5,4 +5,5 @@ class RouteConst {
   static const String home = '/home';
   static const String viewAll = '/viewAll';
   static const String productDetails = '/productDetails';
+  static const String terms = '/terms';
 }

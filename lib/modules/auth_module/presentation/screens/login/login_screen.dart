@@ -7,6 +7,7 @@ import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/components/app_button.dart';
+import 'package:fashion_shop/core/resources/app_strings.dart';
 import 'package:fashion_shop/core/route/route_const.dart';
 import 'package:fashion_shop/core/services/services_locator.dart';
 import 'package:fashion_shop/modules/auth_module/presentation/controller/login/login_cubit.dart';
@@ -51,7 +52,7 @@ class _LoginView extends StatelessWidget {
                 const SizedBox(height: 32),
                 Center(
                   child: Text(
-                    'Login',
+                    AppStrings.login,
                     style: getBukraBold(
                       fontSize: FontSize.s14,
                       color: ColorManager.darkText,
@@ -61,7 +62,7 @@ class _LoginView extends StatelessWidget {
                 const SizedBox(height: 8),
                 Center(
                   child: Text(
-                    'Login now to enjoy the best experience',
+                    AppStrings.loginSubtitle,
                     style: getKaffRegular(
                       fontSize: FontSize.s14,
                       color: ColorManager.darkText,
@@ -71,7 +72,7 @@ class _LoginView extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  'Phone',
+                  AppStrings.phone,
                   style: getBukraBold(
                     fontSize: FontSize.s12,
                     color: ColorManager.darkText,
@@ -98,7 +99,7 @@ class _LoginView extends StatelessWidget {
                                 countryListTheme: CountryListThemeData(
                                   borderRadius: BorderRadius.circular(10),
                                   inputDecoration: InputDecoration(
-                                    hintText: 'Search',
+                                    hintText: AppStrings.search,
                                     prefixIcon: const Icon(Icons.search),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -147,7 +148,7 @@ class _LoginView extends StatelessWidget {
                                 color: ColorManager.hint,
                               ),
                               decoration: InputDecoration(
-                                hintText: 'Phone number',
+                                hintText: AppStrings.phoneNumber,
                                 hintStyle: getKaffRegular(
                                   fontSize: FontSize.s12,
                                   color: ColorManager.hint,
@@ -185,7 +186,7 @@ class _LoginView extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 AppButton(
-                  text: 'Login',
+                  text: AppStrings.login,
                   onPressed: () {
                     if (cubit.login()) {
                       Navigator.pushNamed(
@@ -200,10 +201,14 @@ class _LoginView extends StatelessWidget {
                 Center(
                   child: TextButton(
                     onPressed: () {
-                      // TODO: Guest login
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        RouteConst.home,
+                        (route) => false,
+                      );
                     },
                     child: Text(
-                      'Login as guest',
+                      AppStrings.loginAsGuest,
                       style: getBukraBold(
                         fontSize: FontSize.s12,
                         color: ColorManager.primary,

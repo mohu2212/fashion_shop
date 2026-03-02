@@ -3,12 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fashion_shop/core/components/app_button.dart';
+import 'package:fashion_shop/core/components/cart_alert.dart';
+import 'package:fashion_shop/core/resources/app_strings.dart';
+import 'package:fashion_shop/core/components/login_alert.dart';
+import 'package:fashion_shop/core/data/local/app_data.dart';
 import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/image_assets.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
 import 'package:fashion_shop/modules/home_module/domain/entity/product_entity.dart';
 import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_cubit.dart';
+import 'package:fashion_shop/modules/home_module/presentation/screens/main_navigation/main_navigation_screen.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final ProductEntity product;
@@ -19,13 +24,39 @@ class ProductDetailsScreen extends StatefulWidget {
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
 }
 
-class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+class _ProductDetailsScreenState extends State<ProductDetailsScreen>
+    with SingleTickerProviderStateMixin {
   int _currentImageIndex = 0;
   final PageController _imageController = PageController();
+  late AnimationController _animController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeOut),
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeOut),
+    );
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) _animController.forward();
+    });
+  }
 
   @override
   void dispose() {
     _imageController.dispose();
+    _animController.dispose();
     super.dispose();
   }
 
@@ -155,7 +186,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ],
                   ),
 
-                  Padding(
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,7 +273,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                         // Description title
                         Text(
-                          'Description',
+                          AppStrings.description,
                           style: getBukraBold(
                             fontSize: FontSize.s16,
                             color: ColorManager.darkText,
@@ -257,6 +292,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ],
                     ),
                   ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -272,15 +309,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
             child: AppButton(
-              text: 'Add to Cart',
+              text: AppStrings.addToCart,
               onPressed: () {
+                if (!AppData.isLoggedIn) {
+                  LoginAlert.show(context);
+                  return;
+                }
                 context.read<CartCubit>().addToCart(product);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${product.title} added to cart'),
-                    duration: const Duration(seconds: 1),
-                    behavior: SnackBarBehavior.floating,
-                  ),
+                CartAlert.show(
+                  context,
+                  onGoToCart: () {
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                    MainNavigationScreen.navigationKey.currentState?.switchTab(1);
+                  },
                 );
               },
             ),

@@ -9,6 +9,7 @@ import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/components/app_button.dart';
 import 'package:fashion_shop/core/components/custom_app_bar.dart';
 import 'package:fashion_shop/core/components/loading_overlay.dart';
+import 'package:fashion_shop/core/resources/app_strings.dart';
 import 'package:fashion_shop/core/route/route_const.dart';
 import 'package:fashion_shop/core/services/services_locator.dart';
 import 'package:fashion_shop/modules/auth_module/presentation/controller/otp/otp_cubit.dart';
@@ -37,7 +38,7 @@ class _OtpView extends StatelessWidget {
     final cubit = context.read<OtpCubit>();
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Verification'),
+      appBar: const CustomAppBar(title: AppStrings.verification),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -55,7 +56,7 @@ class _OtpView extends StatelessWidget {
               const SizedBox(height: 32),
               Center(
                 child: Text(
-                  'Verification',
+                  AppStrings.verification,
                   style: getBukraBold(
                     fontSize: FontSize.s14,
                     color: ColorManager.darkText,
@@ -66,6 +67,7 @@ class _OtpView extends StatelessWidget {
               Center(
                 child: Text(
                   'Enter the verification code sent to\n${cubit.phoneNumber}',
+
                   style: getKaffRegular(
                     fontSize: FontSize.s14,
                     color: ColorManager.darkText,
@@ -121,7 +123,7 @@ class _OtpView extends StatelessWidget {
                                 decoration: InputDecoration(
                                   counterText: '',
                                   border: InputBorder.none,
-                                  hintText: '—',
+                                  hintText: AppStrings.otpHint,
                                   hintStyle: getKaffRegular(
                                     fontSize: FontSize.s20,
                                     color: ColorManager.hint,
@@ -152,7 +154,7 @@ class _OtpView extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               AppButton(
-                text: 'Verify',
+                text: AppStrings.verify,
                 onPressed: () async {
                   if (!cubit.validateCode()) return;
                   LoadingOverlay.show(context);
@@ -174,7 +176,7 @@ class _OtpView extends StatelessWidget {
                     // TODO: Resend code
                   },
                   child: Text(
-                    'Resend code',
+                    AppStrings.resendCode,
                     style: getBukraBold(
                       fontSize: FontSize.s12,
                       color: ColorManager.primary,

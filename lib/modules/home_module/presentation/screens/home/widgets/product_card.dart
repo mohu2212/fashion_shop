@@ -2,24 +2,62 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fashion_shop/core/components/cart_alert.dart';
+import 'package:fashion_shop/core/components/login_alert.dart';
+import 'package:fashion_shop/core/data/local/app_data.dart';
 import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/image_assets.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
 import 'package:fashion_shop/modules/home_module/domain/entity/product_entity.dart';
 import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_cubit.dart';
+import 'package:fashion_shop/modules/home_module/presentation/screens/main_navigation/main_navigation_screen.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   final ProductEntity product;
   final VoidCallback? onTap;
 
   const ProductCard({super.key, required this.product, this.onTap});
 
   @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  ProductEntity get product => widget.product;
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
+      onTap: widget.onTap,
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => _controller.reverse(),
+      onTapCancel: () => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: ColorManager.border, width: 1),
@@ -124,13 +162,17 @@ class ProductCard extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
+                          if (!AppData.isLoggedIn) {
+                            LoginAlert.show(context);
+                            return;
+                          }
                           context.read<CartCubit>().addToCart(product);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${product.title} added to cart'),
-                              duration: const Duration(seconds: 1),
-                              behavior: SnackBarBehavior.floating,
-                            ),
+                          CartAlert.show(
+                            context,
+                            onGoToCart: () {
+                              Navigator.popUntil(context, (route) => route.isFirst);
+                              MainNavigationScreen.navigationKey.currentState?.switchTab(1);
+                            },
                           );
                         },
                         child: Container(
@@ -166,6 +208,7 @@ class ProductCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

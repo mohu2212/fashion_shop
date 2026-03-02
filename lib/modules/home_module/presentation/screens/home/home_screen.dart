@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:fashion_shop/core/route/route_const.dart';
+import 'package:fashion_shop/core/resources/app_strings.dart';
 import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/resources/image_assets.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion_shop/core/services/services_locator.dart';
 import 'package:fashion_shop/modules/home_module/presentation/controller/home/home_cubit.dart';
@@ -118,7 +120,7 @@ class _HomeViewState extends State<_HomeView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Welcome!',
+                    AppStrings.welcome,
                     style: getBukraBold(
                       fontSize: FontSize.s16,
                       color: ColorManager.primary,
@@ -170,7 +172,7 @@ class _HomeViewState extends State<_HomeView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'New Arrivals',
+                    AppStrings.newArrivals,
                     style: getBukraBold(
                       fontSize: FontSize.s14,
                       color: ColorManager.darkText,
@@ -186,7 +188,7 @@ class _HomeViewState extends State<_HomeView> {
                       );
                     },
                     child: Text(
-                      'View All',
+                      AppStrings.viewAll,
                       style: getKaffRegular(
                         fontSize: FontSize.s14,
                         color: ColorManager.hint,
@@ -206,8 +208,11 @@ class _HomeViewState extends State<_HomeView> {
                       return const Center(child: CircularProgressIndicator());
                     case HomeStatus.error:
                       return Center(
-                          child:
-                              Text(state.error ?? 'Something went wrong'));
+                        child: SvgPicture.asset(
+                          ImageAssets.error,
+                          width: 200,
+                        ),
+                      );
                     case HomeStatus.loaded:
                       final displayProducts = state.products.take(6).toList();
                       return GridView.builder(
@@ -221,15 +226,18 @@ class _HomeViewState extends State<_HomeView> {
                         ),
                         itemCount: displayProducts.length,
                         itemBuilder: (context, index) {
-                          return ProductCard(
-                            product: displayProducts[index],
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                RouteConst.productDetails,
-                                arguments: displayProducts[index],
-                              );
-                            },
+                          return _StaggeredItem(
+                            index: index,
+                            child: ProductCard(
+                              product: displayProducts[index],
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  RouteConst.productDetails,
+                                  arguments: displayProducts[index],
+                                );
+                              },
+                            ),
                           );
                         },
                       );
@@ -239,6 +247,62 @@ class _HomeViewState extends State<_HomeView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _StaggeredItem extends StatefulWidget {
+  final int index;
+  final Widget child;
+
+  const _StaggeredItem({required this.index, required this.child});
+
+  @override
+  State<_StaggeredItem> createState() => _StaggeredItemState();
+}
+
+class _StaggeredItemState extends State<_StaggeredItem>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    Future.delayed(Duration(milliseconds: 100 * widget.index), () {
+      if (mounted) _controller.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: widget.child,
       ),
     );
   }

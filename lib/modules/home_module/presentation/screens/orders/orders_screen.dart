@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fashion_shop/core/resources/app_strings.dart';
 import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
@@ -20,7 +21,7 @@ class OrdersScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'No orders yet',
+              AppStrings.noOrdersYet,
               style: getBukraBold(
                 fontSize: FontSize.s16,
                 color: ColorManager.darkText,

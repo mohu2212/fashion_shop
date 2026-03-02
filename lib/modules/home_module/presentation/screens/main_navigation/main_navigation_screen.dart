@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fashion_shop/core/resources/app_strings.dart';
 import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
@@ -8,14 +9,20 @@ import 'package:fashion_shop/modules/home_module/presentation/screens/orders/ord
 import 'package:fashion_shop/modules/home_module/presentation/screens/more/more_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  static final navigationKey = GlobalKey<MainNavigationScreenState>();
+
+  MainNavigationScreen({Key? key}) : super(key: key ?? navigationKey);
 
   @override
-  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
+  State<MainNavigationScreen> createState() => MainNavigationScreenState();
 }
 
-class _MainNavigationScreenState extends State<MainNavigationScreen> {
+class MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
+
+  void switchTab(int index) {
+    setState(() => _currentIndex = index);
+  }
 
   final List<Widget> _screens = const [
     HomeScreen(),
@@ -50,25 +57,25 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 index: 0,
                 icon: Icons.home_outlined,
                 activeIcon: Icons.home,
-                label: 'Home',
+                label: AppStrings.home,
               ),
               _buildNavItem(
                 index: 1,
                 icon: Icons.shopping_cart_outlined,
                 activeIcon: Icons.shopping_cart,
-                label: 'Cart',
+                label: AppStrings.cart,
               ),
               _buildNavItem(
                 index: 2,
                 icon: Icons.receipt_long_outlined,
                 activeIcon: Icons.receipt_long,
-                label: 'My Orders',
+                label: AppStrings.myOrders,
               ),
               _buildNavItem(
                 index: 3,
                 icon: Icons.more_horiz,
                 activeIcon: Icons.more_horiz,
-                label: 'More',
+                label: AppStrings.more,
               ),
             ],
           ),

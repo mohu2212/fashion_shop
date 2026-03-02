@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion_shop/core/data/local/cache_helper.dart';
 import 'package:fashion_shop/core/data/remote/dio_helper.dart';
+import 'package:fashion_shop/core/resources/app_strings.dart';
 import 'package:fashion_shop/core/resources/theme_manager.dart';
 import 'package:fashion_shop/core/route/app_route.dart';
 import 'package:fashion_shop/core/services/services_locator.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (_) => sl<CartCubit>(),
       child: MaterialApp(
-        title: 'Fashion Shop',
+        title: AppStrings.appName,
         debugShowCheckedModeBanner: false,
         theme: getAppTheme(),
         onGenerateRoute: AppRoute.generateRoute,
