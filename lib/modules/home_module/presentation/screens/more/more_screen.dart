@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fashion_shop/core/components/tap_scale.dart';
 import 'package:fashion_shop/core/data/local/app_data.dart';
 import 'package:fashion_shop/core/resources/app_strings.dart';
+import 'package:fashion_shop/core/resources/image_assets.dart';
 import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
 import 'package:fashion_shop/core/route/route_const.dart';
 import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_cubit.dart';
+
+const _kCardShadow = Color(0xFFD1D8D7);
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -15,213 +19,37 @@ class MoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorManager.lightGray2,
       body: SafeArea(
         child: Column(
           children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          title: Text(
-                            AppStrings.logoutConfirmTitle,
-                            style: getBukraBold(
-                              fontSize: FontSize.s16,
-                              color: ColorManager.darkText,
-                            ),
-                          ),
-                          content: Text(
-                            AppStrings.logoutConfirmMessage,
-                            style: getKaffRegular(
-                              fontSize: FontSize.s14,
-                              color: ColorManager.hint,
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx),
-                              child: Text(
-                                AppStrings.cancel,
-                                style: getBukraBold(
-                                  fontSize: FontSize.s14,
-                                  color: ColorManager.hint,
-                                ),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(ctx);
-                                context.read<CartCubit>().clearCart();
-                                AppData.logout();
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  RouteConst.login,
-                                  (route) => false,
-                                );
-                              },
-                              child: Text(
-                                AppStrings.logout,
-                                style: getBukraBold(
-                                  fontSize: FontSize.s14,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.logout,
-                          size: 18,
-                          color: ColorManager.primary,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          AppStrings.logout,
-                          style: getBukraBold(
-                            fontSize: FontSize.s12,
-                            color: ColorManager.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    AppStrings.more,
-                    style: getBukraBold(
-                      fontSize: FontSize.s16,
-                      color: ColorManager.darkText,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Grid options
+            _buildHeader(context),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        _buildOptionCard(
-                          icon: Icons.favorite_outlined,
-                          label: AppStrings.favorites,
-                          color: ColorManager.secondary,
-                          onTap: () {},
-                        ),
-                        const SizedBox(width: 16),
-                        _buildOptionCard(
-                          icon: Icons.account_balance_wallet_outlined,
-                          label: AppStrings.wallet,
-                          color: ColorManager.secondary,
-                          onTap: () {},
-                        ),
-                      ],
-                    ),
+                    _buildRow([
+                      _buildCard(icon: ImageAssets.wallet, label: AppStrings.wallet, onTap: () {}),
+                      _buildCard(icon: ImageAssets.favorites, label: AppStrings.favorites, onTap: () {}),
+                    ]),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        _buildOptionCard(
-                          icon: Icons.location_on_outlined,
-                          label: AppStrings.savedAddresses,
-                          color: ColorManager.secondary,
-                          onTap: () {},
-                        ),
-                        const SizedBox(width: 16),
-                        _buildOptionCard(
-                          icon: Icons.settings_outlined,
-                          label: AppStrings.generalSettings,
-                          color: ColorManager.secondary,
-                          onTap: () {},
-                        ),
-                      ],
-                    ),
+                    _buildRow([
+                      _buildCard(icon: ImageAssets.settings, label: AppStrings.generalSettings, onTap: () {}),
+                      _buildCard(icon: ImageAssets.addresses, label: AppStrings.savedAddresses, onTap: () {}),
+                    ]),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        _buildOptionCard(
-                          icon: Icons.phone_outlined,
-                          label: AppStrings.contactUs,
-                          color: ColorManager.secondary,
-                          onTap: () {},
-                        ),
-                        const SizedBox(width: 16),
-                        _buildOptionCard(
-                          icon: Icons.feedback_outlined,
-                          label: AppStrings.complaints,
-                          color: ColorManager.secondary,
-                          onTap: () {},
-                        ),
-                      ],
-                    ),
+                    _buildRow([
+                      _buildCard(icon: ImageAssets.contact, label: AppStrings.contactUs, onTap: () {}),
+                      _buildCard(icon: ImageAssets.complaints, label: AppStrings.complaints, onTap: () {}),
+                    ]),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        _buildOptionCard(
-                          icon: Icons.store_outlined,
-                          label: AppStrings.registerAsStore,
-                          color: ColorManager.secondary,
-                          onTap: () {},
-                        ),
-                        const SizedBox(width: 16),
-                        _buildOptionCard(
-                          icon: Icons.delivery_dining_outlined,
-                          label: AppStrings.registerAsDelivery,
-                          color: ColorManager.secondary,
-                          onTap: () {},
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Terms & Conditions
-                    TapScale(
-                      onTap: () {
-                        Navigator.pushNamed(context, RouteConst.terms);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 14),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                              color: ColorManager.border, width: 1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              AppStrings.termsAndConditions,
-                              style: getKaffRegular(
-                                fontSize: FontSize.s14,
-                                color: ColorManager.darkText,
-                              ),
-                            ),
-                            const Icon(
-                              Icons.arrow_forward_ios,
-                              size: 16,
-                              color: ColorManager.hint,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
+                    _buildRow([
+                      _buildCard(icon: ImageAssets.store, label: AppStrings.registerAsStore, onTap: () {}),
+                      _buildCard(icon: ImageAssets.delivery, label: AppStrings.registerAsDelivery, onTap: () {}),
+                    ]),
+                    const SizedBox(height: 20),
+                    _buildTermsRow(context),
                   ],
                 ),
               ),
@@ -232,10 +60,92 @@ class MoreScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOptionCard({
-    required IconData icon,
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  title: Text(
+                    AppStrings.logoutConfirmTitle,
+                    style: getBukraBold(fontSize: FontSize.s16, color: ColorManager.darkText),
+                  ),
+                  content: Text(
+                    AppStrings.logoutConfirmMessage,
+                    style: getKaffRegular(fontSize: FontSize.s14, color: ColorManager.hint),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: Text(
+                        AppStrings.cancel,
+                        style: getBukraBold(fontSize: FontSize.s14, color: ColorManager.hint),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        context.read<CartCubit>().clearCart();
+                        AppData.logout();
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          RouteConst.login,
+                          (route) => false,
+                        );
+                      },
+                      child: Text(
+                        AppStrings.logout,
+                        style: getBukraBold(fontSize: FontSize.s14, color: ColorManager.alert),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+            child: Row(
+              children: [
+                SvgPicture.asset(
+                  ImageAssets.logout,
+                  width: 18,
+                  height: 18,
+                  colorFilter: const ColorFilter.mode(ColorManager.alert, BlendMode.srcIn),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  AppStrings.logout,
+                  style: getBukraBold(fontSize: FontSize.s12, color: ColorManager.alert),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            AppStrings.more,
+            style: getBukraBold(fontSize: FontSize.s16, color: ColorManager.darkText),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRow(List<Widget> children) {
+    return Row(
+      children: [
+        children[0],
+        const SizedBox(width: 16),
+        children[1],
+      ],
+    );
+  }
+
+  Widget _buildCard({
+    required String icon,
     required String label,
-    required Color color,
     required VoidCallback onTap,
   }) {
     return Expanded(
@@ -244,18 +154,23 @@ class MoreScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
-            border: Border.all(color: ColorManager.border, width: 1),
+            color: ColorManager.white,
             borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: _kCardShadow.withValues(alpha: 0.25),
+                blurRadius: 20,
+                offset: const Offset(5, 10),
+              ),
+            ],
           ),
           child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, size: 24, color: color),
+              SvgPicture.asset(
+                icon,
+                width: 40,
+                height: 40,
+                colorFilter: const ColorFilter.mode(ColorManager.secondary, BlendMode.srcIn),
               ),
               const SizedBox(height: 10),
               Text(
@@ -268,6 +183,47 @@ class MoreScreen extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTermsRow(BuildContext context) {
+    return TapScale(
+      onTap: () => Navigator.pushNamed(context, RouteConst.terms),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: ColorManager.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: _kCardShadow.withValues(alpha: 0.25),
+              blurRadius: 20,
+              offset: const Offset(5, 10),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppStrings.termsAndConditions,
+              style: getKaffRegular(
+                fontSize: FontSize.s14,
+                color: ColorManager.darkText,
+              ),
+            ),
+            Transform.flip(
+              flipX: true,
+              child: SvgPicture.asset(
+                ImageAssets.arrowLeft,
+                width: 16,
+                height: 16,
+                colorFilter: const ColorFilter.mode(ColorManager.primary, BlendMode.srcIn),
+              ),
+            ),
+          ],
         ),
       ),
     );

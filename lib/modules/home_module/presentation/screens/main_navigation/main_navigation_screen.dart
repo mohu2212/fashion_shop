@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fashion_shop/core/resources/app_strings.dart';
 import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
+import 'package:fashion_shop/core/resources/image_assets.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_cubit.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_state.dart';
 import 'package:fashion_shop/modules/home_module/presentation/screens/home/home_screen.dart';
 import 'package:fashion_shop/modules/home_module/presentation/screens/cart/cart_screen.dart';
 import 'package:fashion_shop/modules/home_module/presentation/screens/orders/orders_screen.dart';
@@ -41,93 +46,107 @@ class MainNavigationScreenState extends State<MainNavigationScreen> {
           child: _screens[_currentIndex],
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
-          border: Border(
-            top: BorderSide(color: ColorManager.border, width: 0.5),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(
-                index: 0,
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home,
-                label: AppStrings.home,
+      bottomNavigationBar: BlocBuilder<CartCubit, CartState>(
+        builder: (context, cartState) {
+          return Container(
+            color: ColorManager.white,
+            child: SafeArea(
+              top: false,
+              child: SizedBox(
+                height: 76,
+                child: Row(
+                  children: [
+                    _buildNavItem(index: 0, iconPath: ImageAssets.navHome, label: AppStrings.home),
+                    _buildNavItem(index: 1, iconPath: ImageAssets.navCart, label: AppStrings.cart, badge: cartState.totalItems),
+                    _buildNavItem(index: 2, iconPath: ImageAssets.navOrders, label: AppStrings.myOrders),
+                    _buildNavItem(index: 3, iconPath: ImageAssets.navMore, label: AppStrings.more),
+                  ],
+                ),
               ),
-              _buildNavItem(
-                index: 1,
-                icon: Icons.shopping_cart_outlined,
-                activeIcon: Icons.shopping_cart,
-                label: AppStrings.cart,
-              ),
-              _buildNavItem(
-                index: 2,
-                icon: Icons.receipt_long_outlined,
-                activeIcon: Icons.receipt_long,
-                label: AppStrings.myOrders,
-              ),
-              _buildNavItem(
-                index: 3,
-                icon: Icons.more_horiz,
-                activeIcon: Icons.more_horiz,
-                label: AppStrings.more,
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildNavItem({
     required int index,
-    required IconData icon,
-    required IconData activeIcon,
+    required String iconPath,
     required String label,
+    int badge = 0,
   }) {
     final isSelected = _currentIndex == index;
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? ColorManager.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
+    final color = isSelected ? ColorManager.primary : ColorManager.darkText;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _currentIndex = index),
+        behavior: HitTestBehavior.opaque,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedScale(
-              scale: isSelected ? 1.15 : 1.0,
-              duration: const Duration(milliseconds: 250),
-              child: Icon(
-                isSelected ? activeIcon : icon,
-                size: 24,
-                color: isSelected ? ColorManager.primary : ColorManager.hint,
+            // Top indicator line
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 2,
+              width: isSelected ? 48 : 0,
+              decoration: BoxDecoration(
+                color: ColorManager.primary,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(2),
+                  bottomRight: Radius.circular(2),
+                ),
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: isSelected
-                  ? getBukraBold(
-                      fontSize: FontSize.s10,
-                      color: ColorManager.primary,
-                    )
-                  : getBukraRegular(
-                      fontSize: FontSize.s10,
-                      color: ColorManager.hint,
-                    ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Icon with optional badge
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      SvgPicture.asset(
+                        iconPath,
+                        width: 24,
+                        height: 24,
+                        colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+                      ),
+                      if (badge > 0)
+                        Positioned(
+                          top: -4,
+                          right: -8,
+                          child: Container(
+                            width: 10,
+                            height: 10,
+                            decoration: const BoxDecoration(
+                              color: ColorManager.alert,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                badge > 9 ? '9+' : '$badge',
+                                style: const TextStyle(
+                                  color: ColorManager.white,
+                                  fontSize: 6,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    label,
+                    style: isSelected
+                        ? getBukraBold(fontSize: FontSize.s10, color: ColorManager.primary)
+                        : getBukraRegular(fontSize: FontSize.s10, color: ColorManager.darkText),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -43,6 +43,7 @@ class AppStrings {
   static const String noOrdersYet = 'No orders yet';
 
   // More Screen
+  static const String deleteAccount = 'Delete Account';
   static const String logout = 'Logout';
   static const String logoutConfirmTitle = 'Logout';
   static const String logoutConfirmMessage = 'Are you sure you want to logout?';
