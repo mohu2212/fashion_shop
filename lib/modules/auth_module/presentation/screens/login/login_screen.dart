@@ -10,7 +10,8 @@ import 'package:fashion_shop/core/components/app_button.dart';
 import 'package:fashion_shop/core/resources/app_strings.dart';
 import 'package:fashion_shop/core/route/route_const.dart';
 import 'package:fashion_shop/core/services/services_locator.dart';
-import 'package:fashion_shop/modules/auth_module/presentation/controller/login/login_cubit.dart';
+import 'package:fashion_shop/modules/auth_module/presentation/controller/login/login_bloc.dart';
+import 'package:fashion_shop/modules/auth_module/presentation/controller/login/login_event.dart';
 import 'package:fashion_shop/modules/auth_module/presentation/controller/login/login_state.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -19,7 +20,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<LoginCubit>(),
+      create: (_) => sl<LoginBloc>(),
       child: const _LoginView(),
     );
   }
@@ -30,14 +31,14 @@ class _LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<LoginCubit>();
+    final bloc = context.read<LoginBloc>();
 
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
-            key: cubit.formKey,
+            key: bloc.formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -79,7 +80,7 @@ class _LoginView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                BlocBuilder<LoginCubit, LoginState>(
+                BlocBuilder<LoginBloc, LoginState>(
                   builder: (context, state) {
                     return Container(
                       decoration: BoxDecoration(
@@ -107,7 +108,7 @@ class _LoginView extends StatelessWidget {
                                   ),
                                 ),
                                 onSelect: (country) {
-                                  cubit.selectCountry(country);
+                                  bloc.add(LoginSelectCountry(country));
                                 },
                               );
                             },
@@ -140,9 +141,9 @@ class _LoginView extends StatelessWidget {
                           ),
                           Expanded(
                             child: TextFormField(
-                              controller: cubit.phoneController,
+                              controller: bloc.phoneController,
                               keyboardType: TextInputType.phone,
-                              maxLength: cubit.phoneLength,
+                              maxLength: bloc.phoneLength,
                               style: getKaffRegular(
                                 fontSize: FontSize.s12,
                                 color: ColorManager.hint,
@@ -168,7 +169,7 @@ class _LoginView extends StatelessWidget {
                     );
                   },
                 ),
-                BlocBuilder<LoginCubit, LoginState>(
+                BlocBuilder<LoginBloc, LoginState>(
                   buildWhen: (prev, curr) => prev.error != curr.error,
                   builder: (context, state) {
                     if (state.error == null) return const SizedBox.shrink();
@@ -188,11 +189,11 @@ class _LoginView extends StatelessWidget {
                 AppButton(
                   text: AppStrings.login,
                   onPressed: () {
-                    if (cubit.login()) {
+                    if (bloc.login()) {
                       Navigator.pushNamed(
                         context,
                         RouteConst.otp,
-                        arguments: cubit.fullPhoneNumber,
+                        arguments: bloc.fullPhoneNumber,
                       );
                     }
                   },

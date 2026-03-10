@@ -6,7 +6,7 @@ import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/resources/image_assets.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
-import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_cubit.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_bloc.dart';
 import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_state.dart';
 import 'package:fashion_shop/modules/home_module/presentation/screens/home/home_screen.dart';
 import 'package:fashion_shop/modules/home_module/presentation/screens/cart/cart_screen.dart';
@@ -46,7 +46,7 @@ class MainNavigationScreenState extends State<MainNavigationScreen> {
           child: _screens[_currentIndex],
         ),
       ),
-      bottomNavigationBar: BlocBuilder<CartCubit, CartState>(
+      bottomNavigationBar: BlocBuilder<CartBloc, CartState>(
         builder: (context, cartState) {
           return Container(
             color: ColorManager.white,

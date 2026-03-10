@@ -12,7 +12,8 @@ import 'package:fashion_shop/core/resources/image_assets.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
 import 'package:fashion_shop/modules/home_module/domain/entity/product_entity.dart';
-import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_cubit.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_bloc.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_event.dart';
 import 'package:fashion_shop/modules/home_module/presentation/screens/main_navigation/main_navigation_screen.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -315,7 +316,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                   LoginAlert.show(context);
                   return;
                 }
-                context.read<CartCubit>().addToCart(product);
+                context.read<CartBloc>().add(CartAddItem(product));
                 CartAlert.show(
                   context,
                   onGoToCart: () {

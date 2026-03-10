@@ -7,7 +7,7 @@ import 'package:fashion_shop/core/resources/theme_manager.dart';
 import 'package:fashion_shop/core/route/app_route.dart';
 import 'package:fashion_shop/core/services/services_locator.dart';
 import 'package:fashion_shop/modules/auth_module/presentation/screens/splash/splash_screen.dart';
-import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_cubit.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<CartCubit>(),
+      create: (_) => sl<CartBloc>(),
       child: MaterialApp(
         title: AppStrings.appName,
         debugShowCheckedModeBanner: false,

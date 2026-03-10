@@ -9,7 +9,8 @@ import 'package:fashion_shop/core/resources/image_assets.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
 import 'package:fashion_shop/modules/home_module/domain/entity/cart_item_entity.dart';
-import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_cubit.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_bloc.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_event.dart';
 import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_state.dart';
 
 class CartScreen extends StatelessWidget {
@@ -20,7 +21,7 @@ class CartScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: BlocBuilder<CartCubit, CartState>(
+        child: BlocBuilder<CartBloc, CartState>(
           builder: (context, state) {
             if (state.items.isEmpty) {
               return Center(
@@ -163,10 +164,10 @@ class _CartItemWidget extends StatelessWidget {
                   _QuantityButton(
                     icon: Icons.remove,
                     onTap: () {
-                      context.read<CartCubit>().updateQuantity(
-                        item.product.id,
-                        item.quantity - 1,
-                      );
+                      context.read<CartBloc>().add(CartUpdateQuantity(
+                        productId: item.product.id,
+                        quantity: item.quantity - 1,
+                      ));
                     },
                   ),
                   Padding(
@@ -182,16 +183,16 @@ class _CartItemWidget extends StatelessWidget {
                   _QuantityButton(
                     icon: Icons.add,
                     onTap: () {
-                      context.read<CartCubit>().updateQuantity(
-                        item.product.id,
-                        item.quantity + 1,
-                      );
+                      context.read<CartBloc>().add(CartUpdateQuantity(
+                        productId: item.product.id,
+                        quantity: item.quantity + 1,
+                      ));
                     },
                   ),
                   const Spacer(),
                   GestureDetector(
                     onTap: () {
-                      context.read<CartCubit>().removeFromCart(item.product.id);
+                      context.read<CartBloc>().add(CartRemoveItem(item.product.id));
                     },
                     child: const Icon(
                       Icons.delete_outline,

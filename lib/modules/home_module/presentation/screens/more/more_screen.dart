@@ -9,7 +9,8 @@ import 'package:fashion_shop/core/resources/color_manager.dart';
 import 'package:fashion_shop/core/resources/font_manager.dart';
 import 'package:fashion_shop/core/resources/style_manager.dart';
 import 'package:fashion_shop/core/route/route_const.dart';
-import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_cubit.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_bloc.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/cart/cart_event.dart';
 
 const _kCardShadow = Color(0xFFD1D8D7);
 
@@ -91,7 +92,7 @@ class MoreScreen extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         Navigator.pop(ctx);
-                        context.read<CartCubit>().clearCart();
+                        context.read<CartBloc>().add(CartClear());
                         AppData.logout();
                         Navigator.pushNamedAndRemoveUntil(
                           context,
@@ -175,7 +176,7 @@ class MoreScreen extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 label,
-                style: getKaffRegular(
+                style: getBukraBold(
                   fontSize: FontSize.s12,
                   color: ColorManager.darkText,
                 ),
@@ -209,8 +210,8 @@ class MoreScreen extends StatelessWidget {
           children: [
             Text(
               AppStrings.termsAndConditions,
-              style: getKaffRegular(
-                fontSize: FontSize.s14,
+              style: getBukraRegular(
+                fontSize: FontSize.s12,
                 color: ColorManager.darkText,
               ),
             ),

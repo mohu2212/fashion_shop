@@ -10,7 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fashion_shop/core/services/services_locator.dart';
-import 'package:fashion_shop/modules/home_module/presentation/controller/home/home_cubit.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/home/home_bloc.dart';
+import 'package:fashion_shop/modules/home_module/presentation/controller/home/home_event.dart';
 import 'package:fashion_shop/modules/home_module/presentation/controller/home/home_state.dart';
 import 'package:fashion_shop/modules/home_module/presentation/screens/home/widgets/product_card.dart';
 
@@ -20,7 +21,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<HomeCubit>()..getProducts(),
+      create: (_) => sl<HomeBloc>()..add(HomeGetProducts()),
       child: const _HomeView(),
     );
   }
@@ -180,7 +181,7 @@ class _HomeViewState extends State<_HomeView> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      final products = context.read<HomeCubit>().state.products;
+                      final products = context.read<HomeBloc>().state.products;
                       Navigator.pushNamed(
                         context,
                         RouteConst.viewAll,
@@ -200,7 +201,7 @@ class _HomeViewState extends State<_HomeView> {
             ),
             const SizedBox(height: 12),
             Expanded(
-              child: BlocBuilder<HomeCubit, HomeState>(
+              child: BlocBuilder<HomeBloc, HomeState>(
                 builder: (context, state) {
                   switch (state.status) {
                     case HomeStatus.initial:

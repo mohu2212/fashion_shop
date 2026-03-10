@@ -12,7 +12,8 @@ import 'package:fashion_shop/core/components/loading_overlay.dart';
 import 'package:fashion_shop/core/resources/app_strings.dart';
 import 'package:fashion_shop/core/route/route_const.dart';
 import 'package:fashion_shop/core/services/services_locator.dart';
-import 'package:fashion_shop/modules/auth_module/presentation/controller/otp/otp_cubit.dart';
+import 'package:fashion_shop/modules/auth_module/presentation/controller/otp/otp_bloc.dart';
+import 'package:fashion_shop/modules/auth_module/presentation/controller/otp/otp_event.dart';
 import 'package:fashion_shop/modules/auth_module/presentation/controller/otp/otp_state.dart';
 
 class OtpScreen extends StatelessWidget {
@@ -24,7 +25,7 @@ class OtpScreen extends StatelessWidget {
         ModalRoute.of(context)!.settings.arguments as String? ?? '';
 
     return BlocProvider(
-      create: (_) => sl<OtpCubit>(param1: phoneNumber),
+      create: (_) => sl<OtpBloc>(param1: phoneNumber),
       child: const _OtpView(),
     );
   }
@@ -35,7 +36,7 @@ class _OtpView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<OtpCubit>();
+    final bloc = context.read<OtpBloc>();
 
     return Scaffold(
       appBar: const CustomAppBar(title: AppStrings.verification),
@@ -66,7 +67,7 @@ class _OtpView extends StatelessWidget {
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  'Enter the verification code sent to\n${cubit.phoneNumber}',
+                  'Enter the verification code sent to\n${bloc.phoneNumber}',
 
                   style: getKaffRegular(
                     fontSize: FontSize.s14,
@@ -76,7 +77,7 @@ class _OtpView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              BlocBuilder<OtpCubit, OtpState>(
+              BlocBuilder<OtpBloc, OtpState>(
                 builder: (context, state) {
                   return Column(
                     children: [
@@ -104,12 +105,12 @@ class _OtpView extends StatelessWidget {
                                 if (event is KeyDownEvent &&
                                     event.logicalKey ==
                                         LogicalKeyboardKey.backspace) {
-                                  cubit.onKeyBackspace(index);
+                                  bloc.add(OtpKeyBackspace(index));
                                 }
                               },
                               child: TextField(
-                                controller: cubit.controllers[index],
-                                focusNode: cubit.focusNodes[index],
+                                controller: bloc.controllers[index],
+                                focusNode: bloc.focusNodes[index],
                                 keyboardType: TextInputType.number,
                                 textAlign: TextAlign.center,
                                 maxLength: 1,
@@ -130,7 +131,7 @@ class _OtpView extends StatelessWidget {
                                   ),
                                 ),
                                 onChanged: (value) {
-                                  cubit.onDigitChanged(index, value);
+                                  bloc.add(OtpDigitChanged(index: index, value: value));
                                 },
                               ),
                             ),
@@ -156,9 +157,9 @@ class _OtpView extends StatelessWidget {
               AppButton(
                 text: AppStrings.verify,
                 onPressed: () async {
-                  if (!cubit.validateCode()) return;
+                  if (!bloc.validateCode()) return;
                   LoadingOverlay.show(context);
-                  await cubit.saveLogin();
+                  await bloc.saveLogin();
                   LoadingOverlay.hide();
                   if (context.mounted) {
                     Navigator.pushNamedAndRemoveUntil(
